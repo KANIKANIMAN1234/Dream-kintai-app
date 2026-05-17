@@ -11,6 +11,16 @@ type EmployeeState = {
   code4: string;
 };
 
+function getErrorMessage(payload: unknown, fallback: string): string {
+  if (payload && typeof payload === "object" && "message" in payload) {
+    const message = (payload as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim().length > 0) {
+      return message;
+    }
+  }
+  return fallback;
+}
+
 const labelToEvent: Record<string, AttendanceEventType> = {
   出動: "start",
   退動: "end",
@@ -152,7 +162,7 @@ export function KintaiTerminal() {
           setLockUntil(Date.now() + 30_000);
           setError("認証に3回失敗したため、30秒ロックしました。");
         } else {
-          setError(json.message || "社員コードを確認してください。");
+          setError(getErrorMessage(json, "社員コードを確認してください。"));
         }
         setPin("");
         return;
@@ -195,7 +205,7 @@ export function KintaiTerminal() {
         | ApiError;
 
       if (!res.ok || !json.ok) {
-        setError(json.message || "打刻登録に失敗しました。");
+        setError(getErrorMessage(json, "打刻登録に失敗しました。"));
         return;
       }
 
