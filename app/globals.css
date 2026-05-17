@@ -1,0 +1,229 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  background: #0d1625;
+  color: #fff;
+}
+
+.terminal {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.panel {
+  width: min(1180px, 96vw);
+  height: min(760px, 94vh);
+  border-radius: 24px;
+  background: #13243f;
+  border: 2px solid #2f4b79;
+  padding: 32px;
+}
+
+.idle {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.date {
+  font-size: 2.1rem;
+  margin-bottom: 16px;
+}
+
+.time {
+  font-size: 5rem;
+  font-weight: 700;
+}
+
+.hint {
+  font-size: 2rem;
+  margin-top: 28px;
+  color: #9fd2ff;
+}
+
+.store {
+  margin-top: 40px;
+  font-size: 1.7rem;
+}
+
+.title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pinDots {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.dot {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  border: 2px solid #8ca8d6;
+  display: grid;
+  place-items: center;
+  font-size: 2.5rem;
+}
+
+.keypad {
+  max-width: 520px;
+  margin: 24px auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.key {
+  height: 84px;
+  font-size: 2rem;
+  border-radius: 12px;
+  border: 0;
+  background: #24406a;
+  color: #fff;
+}
+
+.back {
+  margin-top: 12px;
+  min-width: 140px;
+  height: 52px;
+  font-size: 1.2rem;
+  border: 0;
+  border-radius: 10px;
+  background: #314b72;
+  color: #fff;
+}
+
+.error {
+  color: #ffb3b3;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.lock {
+  color: #ffd26e;
+  text-align: center;
+}
+
+.action header {
+  text-align: center;
+}
+
+.employee {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.actionBody {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 18px;
+  height: calc(100% - 180px);
+}
+
+.actionButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.actionButton {
+  border: 0;
+  border-radius: 16px;
+  background: #2a7fd1;
+  color: #fff;
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.history {
+  background: #1c3154;
+  border-radius: 14px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.history h2 {
+  margin: 0 0 8px;
+}
+
+.history ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 1.2rem;
+  line-height: 1.8;
+}
+
+.confirm,
+.done {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.confirmAction,
+.doneAction {
+  font-size: 3.4rem;
+  font-weight: 800;
+  margin: 12px 0;
+}
+
+.question {
+  font-size: 2.1rem;
+}
+
+.confirmButtons {
+  display: flex;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.confirmButtons button {
+  border: 0;
+  border-radius: 12px;
+  width: 220px;
+  height: 74px;
+  font-size: 1.9rem;
+  color: #fff;
+}
+
+.cancel {
+  background: #637795;
+}
+
+.ok {
+  background: #2f9a4c;
+}
+
+.check {
+  font-size: 4rem;
+}
+
+.message {
+  font-size: 2rem;
+}
+
+.countdown {
+  font-size: 1.3rem;
+  margin-top: 18px;
+}
