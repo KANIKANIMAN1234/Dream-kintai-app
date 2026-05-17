@@ -1,4 +1,4 @@
-# kintai-app
+# Dream-kintai-app
 
 勤怠登録端末（T-xx）向けの Web アプリです。  
 仕様書 `T-00〜T-05` の遷移と、Supabase への打刻登録を実装しています。
