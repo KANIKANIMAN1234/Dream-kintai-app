@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { AttendanceEventType, AttendanceLog, ApiError, EmployeeAuthSuccess } from "@/lib/types";
+import { findDemoEmployee, isDemoModeEnabled, storeOptions } from "@/lib/demoEmployees";
+import { generateReflection } from "@/lib/aiReflection";
 
 type Screen = "idle" | "pin" | "action" | "confirm" | "done";
 
@@ -84,8 +86,24 @@ export function KintaiTerminal() {
   const [doneCountdown, setDoneCountdown] = useState(5);
   const [doneAt, setDoneAt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reflectionNote, setReflectionNote] = useState("");
+  const [reflectionSummary, setReflectionSummary] = useState<string | null>(null);
+  const [storeId, setStoreId] = useState<(typeof storeOptions)[number]["id"]>("sayama");
 
-  const storeName = "勤怠登録端末";
+  const storeName = storeOptions.find((s) => s.id === storeId)?.label ?? "ドリー夢 勤怠登録端末";
+  const demoMode = isDemoModeEnabled();
+
+  useEffect(() => {
+    const key = "kintai_store_id";
+    const saved = window.localStorage.getItem(key);
+    if (saved === "sayama" || saved === "musashino" || saved === "honsha") {
+      setStoreId(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("kintai_store_id", storeId);
+  }, [storeId]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(new Date()), 1000);
@@ -154,6 +172,18 @@ export function KintaiTerminal() {
       });
       const json = (await res.json()) as EmployeeAuthSuccess | ApiError;
       if (!res.ok || !json.ok) {
+        if (demoMode) {
+          const demo = findDemoEmployee(code4);
+          if (demo) {
+            setEmployee({ id: demo.id, name: demo.name, code4: demo.code4 });
+            setTodayLogs(demo.todayLogs);
+            setFailedCount(0);
+            setError(null);
+            setPin("");
+            setScreen("action");
+            return;
+          }
+        }
         setEmployee(null);
         setTodayLogs([]);
         const nextFailed = failedCount + 1;
@@ -205,6 +235,17 @@ export function KintaiTerminal() {
         | ApiError;
 
       if (!res.ok || !json.ok) {
+        if (demoMode && employee) {
+          const demoLog: AttendanceLog = {
+            id: `demo-log-${Date.now()}`,
+            event_type: selectedAction,
+            occurred_at: new Date().toISOString(),
+          };
+          setTodayLogs((prev) => [...prev, demoLog]);
+          setDoneAt(demoLog.occurred_at);
+          setScreen("done");
+          return;
+        }
         setError(getErrorMessage(json, "打刻登録に失敗しました。"));
         return;
       }
@@ -246,16 +287,50 @@ export function KintaiTerminal() {
     setSelectedAction(null);
     setDoneAt(null);
     setError(null);
+    setReflectionNote("");
+    setReflectionSummary(null);
+  }
+
+  function saveReflection() {
+    if (!employee || !reflectionNote.trim()) return;
+    const result = generateReflection({
+      title: `${employee.name} 退勤振り返り`,
+      meetingDate: new Date().toISOString().slice(0, 10),
+      participants: employee.name,
+      notes: reflectionNote,
+      context: "daily",
+    });
+    setReflectionSummary(result.summary);
   }
 
   return (
     <main className="terminal" onClick={() => (screen === "idle" ? setScreen("pin") : undefined)}>
+      <div className="topBar">
+        <div className="brand">ドリー夢 勤怠登録端末</div>
+        <label className="storeSelect">
+          設置店舗
+          <select
+            value={storeId}
+            onChange={(e) => setStoreId(e.target.value as (typeof storeOptions)[number]["id"])}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {storeOptions.map((store) => (
+              <option key={store.id} value={store.id}>
+                {store.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        {demoMode && <span className="demoTag">デモ</span>}
+      </div>
+
       {screen === "idle" && (
         <section className="panel idle">
           <div className="date">{formatDate(now)}</div>
           <div className="time">{formatTime(now)}</div>
           <div className="hint">タップして打刻してください</div>
           <div className="store">{storeName}</div>
+          {demoMode && <div className="demoHint">デモ用社員コード: 1001 / 1002 / 1003</div>}
         </section>
       )}
 
@@ -368,6 +443,22 @@ export function KintaiTerminal() {
             {eventToLabel[selectedAction]} {doneAt ? formatHM(doneAt) : ""}
           </div>
           <div className="message">打刻しました。</div>
+          {selectedAction === "end" && (
+            <div className="reflectionPanel">
+              <div className="reflectionTitle">AI-02 感想戦振り返り（任意）</div>
+              <textarea
+                className="reflectionInput"
+                value={reflectionNote}
+                onChange={(e) => setReflectionNote(e.target.value)}
+                placeholder="今日の気づき・申請漏れなど（任意）"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <button type="button" className="reflectionBtn" onClick={saveReflection}>
+                振り返りを保存
+              </button>
+              {reflectionSummary && <p className="reflectionSaved">{reflectionSummary}</p>}
+            </div>
+          )}
           <div className="countdown"> {doneCountdown} 秒後に待機画面へ戻ります</div>
           <button type="button" className="back" onClick={resetToIdle}>
             すぐ戻る

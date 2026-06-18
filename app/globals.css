@@ -21,14 +21,64 @@ body {
   width: 100vw;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  gap: 12px;
+}
+
+.topBar {
+  width: min(1180px, 96vw);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 4px;
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #9fd2ff;
+}
+
+.storeSelect {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #c8daf5;
+}
+
+.storeSelect select {
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid #4a6288;
+  background: #1c3154;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+}
+
+.demoTag {
+  background: #f0ad4e;
+  color: #1a1200;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.demoHint {
+  margin-top: 16px;
+  font-size: 1rem;
+  color: #ffd26e;
 }
 
 .panel {
   width: min(1180px, 96vw);
-  height: min(760px, 94vh);
+  height: min(700px, calc(94vh - 56px));
   border-radius: 24px;
   background: #13243f;
   border: 2px solid #2f4b79;
@@ -226,4 +276,46 @@ body {
 .countdown {
   font-size: 1.3rem;
   margin-top: 18px;
+}
+
+.reflectionPanel {
+  width: min(640px, 90%);
+  margin-top: 20px;
+  text-align: left;
+}
+
+.reflectionTitle {
+  font-size: 1rem;
+  color: #9fd2ff;
+  margin-bottom: 8px;
+}
+
+.reflectionInput {
+  width: 100%;
+  min-height: 90px;
+  border-radius: 10px;
+  border: 1px solid #4a6288;
+  background: #1c3154;
+  color: #fff;
+  padding: 10px;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.reflectionBtn {
+  margin-top: 10px;
+  min-width: 180px;
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a7fd1;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.reflectionSaved {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #c8daf5;
+  line-height: 1.5;
 }
