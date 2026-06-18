@@ -17,9 +17,8 @@ export function isDemoEmployeeId(employeeId: string) {
 }
 
 export const storeOptions = [
-  { id: "sayama", label: "ドリー夢 狭山店" },
-  { id: "musashino", label: "ドリー夢 武蔵野店" },
-  { id: "honsha", label: "ドリー夢 本社" },
+  { id: "sayama", label: "本社（狭山）" },
+  { id: "musashino", label: "武蔵" },
 ] as const;
 
 export function findDemoEmployee(code4: string): DemoEmployee | null {

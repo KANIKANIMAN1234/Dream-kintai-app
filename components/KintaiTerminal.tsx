@@ -94,7 +94,9 @@ export function KintaiTerminal() {
   useEffect(() => {
     const key = "kintai_store_id";
     const saved = window.localStorage.getItem(key);
-    if (saved === "sayama" || saved === "musashino" || saved === "honsha") {
+    if (saved === "honsha" || saved === "sayama") {
+      setStoreId("sayama");
+    } else if (saved === "musashino") {
       setStoreId(saved);
     }
   }, []);
