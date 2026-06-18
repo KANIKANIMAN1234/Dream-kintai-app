@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { AttendanceEventType, AttendanceLog, ApiError, EmployeeAuthSuccess } from "@/lib/types";
 import { findDemoEmployee, isDemoModeEnabled, storeOptions } from "@/lib/demoEmployees";
-import { generateReflection } from "@/lib/aiReflection";
 
 type Screen = "idle" | "pin" | "action" | "confirm" | "done";
 
@@ -86,8 +85,6 @@ export function KintaiTerminal() {
   const [doneCountdown, setDoneCountdown] = useState(5);
   const [doneAt, setDoneAt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [reflectionNote, setReflectionNote] = useState("");
-  const [reflectionSummary, setReflectionSummary] = useState<string | null>(null);
   const [storeId, setStoreId] = useState<(typeof storeOptions)[number]["id"]>("sayama");
 
   const storeName = storeOptions.find((s) => s.id === storeId)?.label ?? "ドリー夢 勤怠登録端末";
@@ -287,20 +284,6 @@ export function KintaiTerminal() {
     setSelectedAction(null);
     setDoneAt(null);
     setError(null);
-    setReflectionNote("");
-    setReflectionSummary(null);
-  }
-
-  function saveReflection() {
-    if (!employee || !reflectionNote.trim()) return;
-    const result = generateReflection({
-      title: `${employee.name} 退勤振り返り`,
-      meetingDate: new Date().toISOString().slice(0, 10),
-      participants: employee.name,
-      notes: reflectionNote,
-      context: "daily",
-    });
-    setReflectionSummary(result.summary);
   }
 
   return (
@@ -444,22 +427,6 @@ export function KintaiTerminal() {
             {eventToLabel[selectedAction]} {doneAt ? formatHM(doneAt) : ""}
           </div>
           <div className="message">打刻しました。</div>
-          {selectedAction === "end" && (
-            <div className="reflectionPanel">
-              <div className="reflectionTitle">AI-02 感想戦振り返り（任意）</div>
-              <textarea
-                className="reflectionInput"
-                value={reflectionNote}
-                onChange={(e) => setReflectionNote(e.target.value)}
-                placeholder="今日の気づき・申請漏れなど（任意）"
-                onClick={(e) => e.stopPropagation()}
-              />
-              <button type="button" className="reflectionBtn" onClick={saveReflection}>
-                振り返りを保存
-              </button>
-              {reflectionSummary && <p className="reflectionSaved">{reflectionSummary}</p>}
-            </div>
-          )}
           <div className="countdown"> {doneCountdown} 秒後に待機画面へ戻ります</div>
           <button type="button" className="back" onClick={resetToIdle}>
             すぐ戻る
