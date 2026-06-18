@@ -12,9 +12,9 @@
 
 ## デモモード
 
-Vercel 等のデモ環境では `NEXT_PUBLIC_DEMO_SCOPE=attendance` がデフォルトで有効です（`next.config.ts` 参照）。
+通常は PC管理画面（M-10 従業員管理）で登録した **4桁社員コード** でログインします。
 
-デモ用社員コード:
+デモ用コード（`NEXT_PUBLIC_DEMO_MODE=true` または `NEXT_PUBLIC_DEMO_SCOPE=attendance` 設定時のみ）:
 
 | コード | 氏名 |
 |--------|------|

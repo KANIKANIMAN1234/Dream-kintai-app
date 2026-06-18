@@ -33,6 +33,40 @@ export async function POST(req: Request) {
       );
     }
 
+    const { data: employeeRow, error: employeeError } = await supabaseAdmin
+      .from("m_employees")
+      .select("id,tenant_id")
+      .eq("id", employeeId)
+      .single();
+
+    if (!employeeError && employeeRow) {
+      const occurredAt = new Date().toISOString();
+      const { data, error } = await supabaseAdmin
+        .from("t_attendance_logs")
+        .insert({
+          tenant_id: employeeRow.tenant_id,
+          employee_id: employeeId,
+          event_type: eventType,
+          occurred_at: occurredAt,
+          input_channel: "terminal_only",
+          terminal_id: terminalId,
+        })
+        .select("id,event_type,occurred_at")
+        .single();
+
+      if (error) {
+        return NextResponse.json<ApiError>(
+          { ok: false, message: `打刻登録に失敗しました: ${error.message}` },
+          { status: 500 },
+        );
+      }
+
+      return NextResponse.json({
+        ok: true,
+        log: data,
+      });
+    }
+
     if (isDemoModeEnabled() && isDemoEmployeeId(employeeId)) {
       const occurredAt = new Date().toISOString();
       return NextResponse.json({
@@ -45,44 +79,10 @@ export async function POST(req: Request) {
       });
     }
 
-    const { data: employeeRow, error: employeeError } = await supabaseAdmin
-      .from("m_employees")
-      .select("id,tenant_id")
-      .eq("id", employeeId)
-      .single();
-    if (employeeError) {
-      return NextResponse.json<ApiError>(
-        { ok: false, message: `従業員情報の取得に失敗しました: ${employeeError.message}` },
-        { status: 500 },
-      );
-    }
-
-    const occurredAt = new Date().toISOString();
-
-    const { data, error } = await supabaseAdmin
-      .from("t_attendance_logs")
-      .insert({
-        tenant_id: employeeRow.tenant_id,
-        employee_id: employeeId,
-        event_type: eventType,
-        occurred_at: occurredAt,
-        input_channel: "terminal_only",
-        terminal_id: terminalId,
-      })
-      .select("id,event_type,occurred_at")
-      .single();
-
-    if (error) {
-      return NextResponse.json<ApiError>(
-        { ok: false, message: `打刻登録に失敗しました: ${error.message}` },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      ok: true,
-      log: data,
-    });
+    return NextResponse.json<ApiError>(
+      { ok: false, message: "従業員情報の取得に失敗しました。" },
+      { status: employeeError ? 500 : 404 },
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "不明なエラー";
     return NextResponse.json<ApiError>({ ok: false, message }, { status: 500 });

@@ -26,22 +26,6 @@ export async function POST(req: Request) {
       );
     }
 
-    if (isDemoModeEnabled()) {
-      const demo = findDemoEmployee(code4);
-      if (demo) {
-        const response: EmployeeAuthSuccess = {
-          ok: true,
-          employee: {
-            id: demo.id,
-            name: demo.name,
-            employee_code_4: demo.code4,
-          },
-          todayLogs: demo.todayLogs,
-        };
-        return NextResponse.json(response);
-      }
-    }
-
     const { data: employees, error } = await supabaseAdmin
       .from("m_employees")
       .select("id,tenant_id,name,employee_code_4,is_active")
@@ -57,6 +41,21 @@ export async function POST(req: Request) {
     }
 
     if (!employees || employees.length === 0) {
+      if (isDemoModeEnabled()) {
+        const demo = findDemoEmployee(code4);
+        if (demo) {
+          const response: EmployeeAuthSuccess = {
+            ok: true,
+            employee: {
+              id: demo.id,
+              name: demo.name,
+              employee_code_4: demo.code4,
+            },
+            todayLogs: demo.todayLogs,
+          };
+          return NextResponse.json(response);
+        }
+      }
       return NextResponse.json<ApiError>(
         { ok: false, message: "社員コードを確認してください。" },
         { status: 401 },
