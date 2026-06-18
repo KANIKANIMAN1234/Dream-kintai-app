@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { AttendanceEventType, AttendanceLog, ApiError, EmployeeAuthSuccess } from "@/lib/types";
 import { findDemoEmployee, isDemoModeEnabled, storeOptions } from "@/lib/demoEmployees";
+import { captureGpsLocation } from "@/lib/geolocation";
 
 type Screen = "idle" | "pin" | "action" | "confirm" | "done";
 
@@ -218,6 +219,7 @@ export function KintaiTerminal() {
     setIsSubmitting(true);
     setError(null);
     try {
+      const location = await captureGpsLocation();
       const res = await fetch("/api/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -225,6 +227,7 @@ export function KintaiTerminal() {
           employeeId: employee.id,
           eventType: selectedAction,
           terminalId: getTerminalIdentifier(),
+          ...(location ? { location } : {}),
         }),
       });
       const json = (await res.json()) as

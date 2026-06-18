@@ -14,6 +14,12 @@ export async function POST(req: Request) {
       employeeId?: string;
       eventType?: AttendanceEventType;
       terminalId?: string;
+      location?: {
+        latitude?: number;
+        longitude?: number;
+        accuracy_m?: number;
+        captured_at?: string;
+      };
     };
     const employeeId = body.employeeId?.trim() ?? "";
     const eventType = body.eventType;
@@ -41,6 +47,13 @@ export async function POST(req: Request) {
 
     if (!employeeError && employeeRow) {
       const occurredAt = new Date().toISOString();
+      const location = body.location;
+      const hasLocation =
+        typeof location?.latitude === "number" &&
+        typeof location?.longitude === "number" &&
+        Number.isFinite(location.latitude) &&
+        Number.isFinite(location.longitude);
+
       const { data, error } = await supabaseAdmin
         .from("t_attendance_logs")
         .insert({
@@ -50,6 +63,16 @@ export async function POST(req: Request) {
           occurred_at: occurredAt,
           input_channel: "terminal_only",
           terminal_id: terminalId,
+          ...(hasLocation
+            ? {
+                location_latitude: location.latitude,
+                location_longitude: location.longitude,
+                location_accuracy_m:
+                  typeof location.accuracy_m === "number" ? location.accuracy_m : null,
+                location_captured_at: location.captured_at ?? occurredAt,
+                location_source: "gps",
+              }
+            : {}),
         })
         .select("id,event_type,occurred_at")
         .single();
