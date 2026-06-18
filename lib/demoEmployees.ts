@@ -8,7 +8,12 @@ export type DemoEmployee = {
 };
 
 export function isDemoModeEnabled() {
+  if (process.env.NEXT_PUBLIC_FORCE_PRODUCTION === "true") return false;
   return process.env.NEXT_PUBLIC_DEMO_MODE === "true" || process.env.NEXT_PUBLIC_DEMO_SCOPE === "attendance";
+}
+
+export function isDemoEmployeeId(employeeId: string) {
+  return employeeId.startsWith("demo-emp-");
 }
 
 export const storeOptions = [

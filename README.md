@@ -10,6 +10,20 @@
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
+## デモモード
+
+Vercel 等のデモ環境では `NEXT_PUBLIC_DEMO_SCOPE=attendance` がデフォルトで有効です（`next.config.ts` 参照）。
+
+デモ用社員コード:
+
+| コード | 氏名 |
+|--------|------|
+| 1001 | 田中 一郎 |
+| 1002 | 鈴木 花子 |
+| 1003 | 佐藤 次郎 |
+
+本番運用時は `NEXT_PUBLIC_FORCE_PRODUCTION=true` を設定してください。
+
 ## 開発起動
 
 ```bash

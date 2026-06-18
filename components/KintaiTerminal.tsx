@@ -337,6 +337,7 @@ export function KintaiTerminal() {
       {screen === "pin" && (
         <section className="panel pin">
           <div className="title">4桁社員コードを入力してください</div>
+          {demoMode && <div className="demoHint">デモ用社員コード: 1001 / 1002 / 1003</div>}
           <div className="pinDots">
             {Array.from({ length: 4 }).map((_, idx) => (
               <span key={idx} className="dot">

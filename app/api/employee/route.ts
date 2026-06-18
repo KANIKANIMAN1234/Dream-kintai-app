@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { findDemoEmployee, isDemoModeEnabled } from "@/lib/demoEmployees";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import type { ApiError, EmployeeAuthSuccess } from "@/lib/types";
 
@@ -23,6 +24,22 @@ export async function POST(req: Request) {
         { ok: false, message: "社員コードは4桁の数字で入力してください。" },
         { status: 400 },
       );
+    }
+
+    if (isDemoModeEnabled()) {
+      const demo = findDemoEmployee(code4);
+      if (demo) {
+        const response: EmployeeAuthSuccess = {
+          ok: true,
+          employee: {
+            id: demo.id,
+            name: demo.name,
+            employee_code_4: demo.code4,
+          },
+          todayLogs: demo.todayLogs,
+        };
+        return NextResponse.json(response);
+      }
     }
 
     const { data: employees, error } = await supabaseAdmin

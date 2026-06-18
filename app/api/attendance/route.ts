@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isDemoEmployeeId, isDemoModeEnabled } from "@/lib/demoEmployees";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import type { ApiError, AttendanceEventType } from "@/lib/types";
 
@@ -30,6 +31,18 @@ export async function POST(req: Request) {
         { ok: false, message: "eventType が不正です。" },
         { status: 400 },
       );
+    }
+
+    if (isDemoModeEnabled() && isDemoEmployeeId(employeeId)) {
+      const occurredAt = new Date().toISOString();
+      return NextResponse.json({
+        ok: true,
+        log: {
+          id: `demo-log-${Date.now()}`,
+          event_type: eventType,
+          occurred_at: occurredAt,
+        },
+      });
     }
 
     const { data: employeeRow, error: employeeError } = await supabaseAdmin
